@@ -22,7 +22,7 @@ st.set_page_config(
 # Theme configurations
 THEMES = {
     "Zombie Apocalypse": {
-        "background": "https://media.giphy.com/media/xT9IgkgwQDqp0utHFK/giphy.gif",
+        "background": "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExZHB6YTZzdjM3anpzOTdtdXg5NXBpM2VlbDNmNzlvenBmMnpicXJ6eiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/13bD1lqmU6fRbq/giphy.gif",
         "primary_color": "#ff0000",
         "header_color": "#ffffff",
         "text_color": "#000000",
