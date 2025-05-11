@@ -12,7 +12,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 # Configure page
 st.set_page_config(
     page_title="ML PRO MADE BY Samad,Izza and Hashir",
-    page_icon="🔥",
+    page_icon="☠️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -174,7 +174,7 @@ def main():
     # Dynamic Header with Theme Emojis
     st.markdown(f"""
     <h1 style="text-align:center;">
-        {emoji} Universal ML Platform {emoji}
+        {emoji} Multi-Themed-Financial-Machine-Learning {emoji}
     </h1>
     """, unsafe_allow_html=True)
     st.markdown("---")
