@@ -1,4 +1,3 @@
-# app.py - Universal ML Platform for Any Dataset
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -295,6 +294,8 @@ def main():
         results_df = pd.DataFrame({'Actual': pred['y_test'], 'Predicted': pred['y_pred']})
         
         tab1, tab2 = st.tabs(["📊 Line Chart", "📈 Scatter Plot"])
+
+
         with tab1:
             fig = go.Figure()
             fig.add_trace(go.Scatter(y=results_df['Actual'], name='Actual', line=dict(color=theme["primary_color"])))
