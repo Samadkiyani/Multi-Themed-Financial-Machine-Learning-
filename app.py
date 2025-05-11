@@ -21,49 +21,58 @@ st.set_page_config(
 
 # Theme configurations
 THEMES = {
-    "Vibrant Theme": {
-        "background": "linear-gradient(to right, #ff6b6b, #ffa500, #ffff00, #00ff00, #00ffff, #0000ff, #9b59b6)",
-        "primary_color": "#ff6b6b",
-        "header_color": "#333333",
-        "text_color": "#333333",
+    "Zombie Theme": {
+        "background": "https://media.giphy.com/media/xT9IgkgwQDqp0utHFK/giphy.gif",
+        "primary_color": "#ff0000",
+        "header_color": "#ffffff",
+        "text_color": "#000000",
         "sidebar_bg": "rgba(255, 255, 255, 0.9)",
-        "sidebar_text": "#333333"
-    },
-    "Elegant Theme": {
-        "background": "linear-gradient(to right, #4b6cb7, #182848, #314755, #26a0da, #4ca1af, #c4e0e5)",
-        "primary_color": "#4b6cb7",
-        "header_color": "#333333",
-        "text_color": "#333333",
-        "sidebar_bg": "rgba(255, 255, 255, 0.8)",
-        "sidebar_text": "#333333"
+        "sidebar_text": "#000000",
+        "font_family": "'Creepster', cursive"
     },
     "Futuristic Theme": {
         "background": "linear-gradient(to right, #00f3ff, #00d2ff, #00b7ff, #00a0ff, #008aff, #0075ff, #0060ff)",
         "primary_color": "#00f3ff",
-        "header_color": "#333333",
-        "text_color": "#333333",
+        "header_color": "#000000",
+        "text_color": "#ffffff",
         "sidebar_bg": "rgba(255, 255, 255, 0.8)",
-        "sidebar_text": "#333333"
+        "sidebar_text": "#000000",
+        "font_family": "'Orbitron', sans-serif"
     },
-    "Earthy Theme": {
-        "background": "linear-gradient(to right, #8e9b9f, #7c8d92, #6c7e85, #5d707a, #4e6270, #3f5365, #304459)",
-        "primary_color": "#8e9b9f",
-        "header_color": "#333333",
-        "text_color": "#333333",
+    "Game of Thrones Theme": {
+        "background": "https://media.giphy.com/media/3o7TKwmnDgQb5jemjK/giphy.gif",
+        "primary_color": "#ffcc00",
+        "header_color": "#000000",
+        "text_color": "#ffffff",
+        "sidebar_bg": "rgba(255, 255, 255, 0.8)",
+        "sidebar_text": "#000000",
+        "font_family": "'Cinzel', serif"
+    },
+    "Gaming Theme": {
+        "background": "linear-gradient(to right, #ff6b6b, #ffa500, #ffff00, #00ff00, #00ffff, #0000ff, #9b59b6)",
+        "primary_color": "#39ff14",
+        "header_color": "#000000",
+        "text_color": "#ffffff",
         "sidebar_bg": "rgba(255, 255, 255, 0.9)",
-        "sidebar_text": "#333333"
+        "sidebar_text": "#000000",
+        "font_family": "'Press Start 2P', cursive"
     }
 }
 
 def apply_theme(theme):
     st.markdown(f"""
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
         body, .stApp {{
-            background-image: {theme["background"]};
+            background-image: url('{theme["background"]}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
             color: {theme["text_color"]};
+            font-family: '{theme["font_family"]}', cursive;
         }}
         .main {{
             background-color: rgba(255, 255, 255, 0.85);
@@ -121,10 +130,19 @@ def apply_theme(theme):
     </style>
     """, unsafe_allow_html=True)
 
-    # Add flying airplane animation
-    st.markdown("""
-    <img src="https://cdn-icons-png.flaticon.com/512/619/619167.png" class="airplane" width="50" />
-    """, unsafe_allow_html=True)
+    if theme["background"].endswith(".gif"):
+        st.markdown("""
+        <script>
+            setInterval(function() {{
+                var airplane = document.querySelector('.airplane');
+                airplane.style.left = '100vw';
+            }}, 5000);
+        </script>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("""
+        <img src="https://cdn-icons-png.flaticon.com/512/619/619167.png" class="airplane" width="50" />
+        """, unsafe_allow_html=True)
 
 # Main Function
 def main():
