@@ -138,15 +138,26 @@ def analyze_data(theme):
     st.header(f"🔍 {theme['model']} Analysis")
     df = st.session_state.data
     
+    # Keep only numeric columns
+    numeric_df = df.select_dtypes(include=[np.number])
+    if numeric_df.shape[1] < 2:
+        st.error("Dataset needs at least 2 numeric columns for correlation analysis.")
+        return
+
+    # Check for NaN values
+    if numeric_df.isnull().values.any():
+        st.warning("NaN values found in the dataset. Filling NaN values with zeros.")
+        numeric_df = numeric_df.fillna(0)  # or use .dropna() to remove rows with NaN
+
     col1, col2 = st.columns(2)
     
     with col1:
         st.write("### Data Signature")
-        st.dataframe(df.describe().style.format("{:.2f}"), height=300)
+        st.dataframe(numeric_df.describe().style.format("{:.2f}"), height=300)
         
     with col2:
         st.write("### Quantum Correlation")
-        corr = df.corr()
+        corr = numeric_df.corr()
         fig = px.imshow(corr, text_auto=".2f", 
                        color_continuous_scale=[theme['primary'], theme['secondary']])
         fig.update_layout(
