@@ -187,9 +187,9 @@ def main():
     # Sidebar Configuration
     with st.sidebar:
         st.header(f"{theme['emojis'][1]} CONFIGURATION")
-        uploaded_file = st.file_uploader("Upload Dataset", type=["csv", "xlsx"], label_visibility="hidden")
-        model_type = st.selectbox("Model Type", ["Linear Regression", "Random Forest"], label_visibility="hidden")
-        test_size = st.slider("Test Size", 0.1, 0.5, 0.2, label_visibility="hidden")
+        uploaded_file = st.file_uploader("Upload Dataset", type=["csv", "xlsx"])
+        model_type = st.selectbox("Model Type", ["Linear Regression", "Random Forest"])
+        test_size = st.slider("Test Size", 0.1, 0.5, 0.2)
         st.button("🔄 Reset Session", on_click=lambda: st.session_state.clear())
 
     # Step 1: Data Upload
@@ -213,13 +213,14 @@ def main():
             # Feature Selection
             with st.expander(f"{theme['emojis'][4]} Feature Configuration"):
                 all_cols = df.columns.tolist()
-                target = st.selectbox("Select Target", numeric_cols, index=len(numeric_cols)-1, label_visibility="hidden")
+                target = st.selectbox("Select Target", numeric_cols, index=len(numeric_cols)-1)
                 features = st.multiselect("Select Features", numeric_cols, default=[c for c in numeric_cols if c != target][:3])
                 
                 if st.button(f"{theme['emojis'][1]} Confirm Selection"):
                     st.session_state.features = features
                     st.session_state.target = target
                     st.session_state.steps['processed'] = True
+                    st.session_state.steps['step_2_done'] = False  # Ensuring Step 2 is not skipped
                     st.rerun()
                     
         except Exception as e:
@@ -229,7 +230,7 @@ def main():
     st.markdown("---")
 
     # Step 2: Data Analysis
-    if st.session_state.get('processed'):
+    if st.session_state.get('processed') and not st.session_state.get('step_2_done'):
         st.header(f"{theme['emojis'][1]} Step 2: Data Analysis")
         df = st.session_state.data
         features = st.session_state.features
@@ -238,7 +239,7 @@ def main():
         col1, col2 = st.columns(2)
         with col1:
             st.subheader(f"{theme['emojis'][2]} Feature Relationships")
-            selected_feature = st.selectbox("Select Feature", features, label_visibility="hidden")
+            selected_feature = st.selectbox("Select Feature", features)
             fig = px.scatter(df, x=selected_feature, y=target, trendline="ols", 
                             color=selected_feature, template=theme["chart_theme"])
             st.plotly_chart(fig, use_container_width=True)
@@ -248,12 +249,15 @@ def main():
             corr_matrix = df[features + [target]].corr()
             fig = px.imshow(corr_matrix, text_auto=".2f", template=theme["chart_theme"])
             st.plotly_chart(fig, use_container_width=True)
+        
+        # Mark Step 2 as complete
+        st.session_state.steps['step_2_done'] = True
         st.markdown("---")
 
     # Step 3: Model Training
-    if st.session_state.get('processed'):
+    if st.session_state.get('processed') and st.session_state.get('step_2_done'):
         st.header(f"{theme['emojis'][1]} Step 3: Model Training")
-        if st.button(f"{theme['emojis'][4]} Train Model", type="primary"):
+        if st.button(f"{theme['emojis'][4]} Train Model"):
             with st.spinner(f"{theme['emojis'][3]} Training {model_type}..."):
                 X = df[features]
                 y = df[target]
@@ -294,7 +298,6 @@ def main():
         results_df = pd.DataFrame({'Actual': pred['y_test'], 'Predicted': pred['y_pred']})
         
         tab1, tab2 = st.tabs(["📊 Line Chart", "📈 Scatter Plot"])
-
 
         with tab1:
             fig = go.Figure()
