@@ -21,37 +21,37 @@ st.set_page_config(
 
 # Theme configurations
 THEMES = {
-    "Zombie Theme": {
-        "background": "https://img.freepik.com/premium-photo/zombie-pattern-illustration_759095-80916.jpg",
-        "primary_color": "#ff0000",
-        "header_color": "#ffffff",
-        "text_color": "#000000",
+    "Vibrant Theme": {
+        "background": "linear-gradient(to right, #ff6b6b, #ffa500, #ffff00, #00ff00, #00ffff, #0000ff, #9b59b6)",
+        "primary_color": "#ff6b6b",
+        "header_color": "#333333",
+        "text_color": "#333333",
         "sidebar_bg": "rgba(255, 255, 255, 0.9)",
-        "sidebar_text": "#000000"
+        "sidebar_text": "#333333"
+    },
+    "Elegant Theme": {
+        "background": "linear-gradient(to right, #4b6cb7, #182848, #314755, #26a0da, #4ca1af, #c4e0e5)",
+        "primary_color": "#4b6cb7",
+        "header_color": "#333333",
+        "text_color": "#333333",
+        "sidebar_bg": "rgba(255, 255, 255, 0.8)",
+        "sidebar_text": "#333333"
     },
     "Futuristic Theme": {
-        "background": "https://png.pngtree.com/background/20230526/original/pngtree-3d-seamless-ts-corridor-led-light-futuristic-futuristic-technology-theme-picture-image_2747901.jpg",
+        "background": "linear-gradient(to right, #00f3ff, #00d2ff, #00b7ff, #00a0ff, #008aff, #0075ff, #0060ff)",
         "primary_color": "#00f3ff",
-        "header_color": "#000000",
-        "text_color": "#ffffff",
+        "header_color": "#333333",
+        "text_color": "#333333",
         "sidebar_bg": "rgba(255, 255, 255, 0.8)",
-        "sidebar_text": "#000000"
+        "sidebar_text": "#333333"
     },
-    "Game of Thrones Theme": {
-        "background": "https://assets1.ignimgs.com/2017/06/28/top100-gotcharacters-desktop-1498688689918.jpg",
-        "primary_color": "#ffcc00",
-        "header_color": "#000000",
-        "text_color": "#ffffff",
-        "sidebar_bg": "rgba(255, 255, 255, 0.8)",
-        "sidebar_text": "#000000"
-    },
-    "Gaming Theme": {
-        "background": "https://wallpapercave.com/wp/wp10535977.jpg",
-        "primary_color": "#39ff14",
-        "header_color": "#000000",
-        "text_color": "#ffffff",
+    "Earthy Theme": {
+        "background": "linear-gradient(to right, #8e9b9f, #7c8d92, #6c7e85, #5d707a, #4e6270, #3f5365, #304459)",
+        "primary_color": "#8e9b9f",
+        "header_color": "#333333",
+        "text_color": "#333333",
         "sidebar_bg": "rgba(255, 255, 255, 0.9)",
-        "sidebar_text": "#000000"
+        "sidebar_text": "#333333"
     }
 }
 
@@ -59,7 +59,7 @@ def apply_theme(theme):
     st.markdown(f"""
     <style>
         body, .stApp {{
-            background-image: url('{theme["background"]}');
+            background-image: {theme["background"]};
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -219,13 +219,13 @@ def main():
         with col1:
             st.write("### Feature-Target Relationships")
             selected_feature = st.selectbox("Select feature to plot:", features)
-            fig = px.scatter(df, x=selected_feature, y=target, trendline="ols", height=400)
+            fig = px.scatter(df, x=selected_feature, y=target, trendline="ols", height=400, color=selected_feature, color_continuous_scale='Viridis')
             st.plotly_chart(fig, use_container_width=True)
             
         with col2:
             st.write("### Correlation Matrix")
             corr_matrix = df[features + [target]].corr()
-            fig = px.imshow(corr_matrix, text_auto=".2f", color_continuous_scale='Blues', aspect="auto")
+            fig = px.imshow(corr_matrix, text_auto=".2f", color_continuous_scale='Inferno', aspect="auto")
             st.plotly_chart(fig, use_container_width=True)
         
         if st.button("🚀 Proceed to Model Training"):
@@ -266,9 +266,9 @@ def main():
         
         col1, col2 = st.columns(2)
         with col1:
-            st.metric("RMSE", f"{np.sqrt(mean_squared_error(y_test, y_pred)):.2f}")
+            st.metric("RMSE", f"{np.sqrt(mean_squared_error(y_test, y_pred)):.2f}", delta_color="inverse")
         with col2:
-            st.metric("R² Score", f"{r2_score(y_test, y_pred):.2f}")
+            st.metric("R² Score", f"{r2_score(y_test, y_pred):.2f}", delta_color="inverse")
         
         st.write("### Actual vs Predicted Values")
         results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred}).reset_index(drop=True)
@@ -276,14 +276,14 @@ def main():
         fig = go.Figure()
         fig.add_trace(go.Scatter(x=results.index, y=results['Actual'], name='Actual', mode='markers', marker=dict(color='#2a4a7c')))
         fig.add_trace(go.Scatter(x=results.index, y=results['Predicted'], name='Predicted', mode='markers', marker=dict(color='#4CAF50')))
-        fig.update_layout(xaxis_title="Sample Index", yaxis_title="Value", height=500)
+        fig.update_layout(xaxis_title="Sample Index", yaxis_title="Value", height=500, template='plotly_dark')
         st.plotly_chart(fig, use_container_width=True)
         
         if model_type == "Random Forest":
             st.write("### Feature Importance")
             importance = pd.DataFrame({'Feature': st.session_state.features, 'Importance': st.session_state.model.feature_importances_})
             importance = importance.sort_values('Importance', ascending=False)
-            fig = px.bar(importance, x='Importance', y='Feature', orientation='h', color='Importance', color_continuous_scale='Blues')
+            fig = px.bar(importance, x='Importance', y='Feature', orientation='h', color='Importance', color_continuous_scale='Inferno')
             st.plotly_chart(fig, use_container_width=True)
         
         csv = results.to_csv(index=False).encode('utf-8')
