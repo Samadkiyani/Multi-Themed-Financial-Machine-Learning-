@@ -156,7 +156,7 @@ def apply_theme(theme):
 def main():
     # Theme Selection
     st.sidebar.header(f"🎨 THEME CUSTOMIZATION")
-    theme_name = st.sidebar.selectbox("", list(THEMES.keys()))
+    theme_name = st.sidebar.selectbox("Select Theme", list(THEMES.keys()))
     theme = THEMES[theme_name]
     apply_theme(theme)
     
@@ -187,9 +187,9 @@ def main():
     # Sidebar Configuration
     with st.sidebar:
         st.header(f"{theme['emojis'][1]} CONFIGURATION")
-        uploaded_file = st.file_uploader(f"{theme['emojis'][2]} Upload Dataset:", type=["csv", "xlsx"])
-        model_type = st.selectbox(f"{theme['emojis'][3]} Model Type:", ["Linear Regression", "Random Forest"])
-        test_size = st.slider(f"{theme['emojis'][4]} Test Size:", 0.1, 0.5, 0.2)
+        uploaded_file = st.file_uploader("Upload Dataset", type=["csv", "xlsx"], label_visibility="hidden")
+        model_type = st.selectbox("Model Type", ["Linear Regression", "Random Forest"], label_visibility="hidden")
+        test_size = st.slider("Test Size", 0.1, 0.5, 0.2, label_visibility="hidden")
         st.button("🔄 Reset Session", on_click=lambda: st.session_state.clear())
 
     # Step 1: Data Upload
@@ -213,8 +213,8 @@ def main():
             # Feature Selection
             with st.expander(f"{theme['emojis'][4]} Feature Configuration"):
                 all_cols = df.columns.tolist()
-                target = st.selectbox("🎯 Select Target:", numeric_cols, index=len(numeric_cols)-1)
-                features = st.multiselect("📊 Select Features:", numeric_cols, default=[c for c in numeric_cols if c != target][:3])
+                target = st.selectbox("Select Target", numeric_cols, index=len(numeric_cols)-1, label_visibility="hidden")
+                features = st.multiselect("Select Features", numeric_cols, default=[c for c in numeric_cols if c != target][:3])
                 
                 if st.button(f"{theme['emojis'][1]} Confirm Selection"):
                     st.session_state.features = features
@@ -238,7 +238,7 @@ def main():
         col1, col2 = st.columns(2)
         with col1:
             st.subheader(f"{theme['emojis'][2]} Feature Relationships")
-            selected_feature = st.selectbox("Select Feature:", features)
+            selected_feature = st.selectbox("Select Feature", features, label_visibility="hidden")
             fig = px.scatter(df, x=selected_feature, y=target, trendline="ols", 
                             color=selected_feature, template=theme["chart_theme"])
             st.plotly_chart(fig, use_container_width=True)
