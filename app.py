@@ -1,4 +1,4 @@
-# app.py - Universal ML Platform with 4 New Themes
+# app.py - Universal ML Platform with 4 Stunning Themes
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -9,11 +9,11 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, silhouette_score
-import yfinance as yf
-import datetime
-from PIL import Image
-import io
+from sklearn.metrics import (mean_squared_error, 
+                           r2_score, 
+                           accuracy_score, 
+                           silhouette_score)
+import base64
 
 # Configure page
 st.set_page_config(
@@ -23,50 +23,56 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Theme configurations
+# Theme configurations with local assets
 THEMES = {
     "Avengers": {
-        "background": "https://images.unsplash.com/photo-1633613286848-e6f43bbafb8d?ixlib=rb-4.0.3",
         "primary_color": "#ED1D24",  # Marvel Red
         "secondary_color": "#0057B7",  # Marvel Blue
         "text_color": "#FFFFFF",
         "font": "Arial Black",
-        "gif": "https://media.giphy.com/media/l3vRno1vowh3V8G3C/giphy.gif",
         "button_style": "marvel",
-        "model": "Linear Regression"
+        "model": "Linear Regression",
+        "bg_image": "avengers_bg.jpg",
+        "logo": "avengers_logo.png"
     },
     "Zombie": {
-        "background": "https://images.unsplash.com/photo-1506815444479-bfdb1e96c566?ixlib=rb-4.0.3",
         "primary_color": "#8B0000",  # Blood Red
         "secondary_color": "#2F4F4F",  # Dark Slate Gray
         "text_color": "#FFFFFF",
         "font": "Chiller",
-        "gif": "https://media.giphy.com/media/3o7TKsrf0g3JXxQnY4/giphy.gif",
         "button_style": "horror",
-        "model": "Logistic Regression"
+        "model": "Logistic Regression",
+        "bg_image": "zombie_bg.jpg",
+        "logo": "zombie_logo.png"
     },
     "Game of Thrones": {
-        "background": "https://images.unsplash.com/photo-1534447677768-be436bb09401?ixlib=rb-4.0.3",
         "primary_color": "#B22222",  # Firebrick Red
         "secondary_color": "#4682B4",  # Steel Blue
         "text_color": "#FFFFFF",
-        "font": "Game of Thrones",
-        "gif": "https://media.giphy.com/media/3o7TKz2eMXx8JhnoG4/giphy.gif",
+        "font": "Times New Roman",
         "button_style": "medieval",
-        "model": "K-Means Clustering"
+        "model": "K-Means Clustering",
+        "bg_image": "got_bg.jpg",
+        "logo": "got_logo.png"
     },
     "PUBG": {
-        "background": "https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-4.0.3",
         "primary_color": "#FFA500",  # Orange
         "secondary_color": "#556B2F",  # Dark Olive Green
         "text_color": "#FFFFFF",
         "font": "Impact",
-        "gif": "https://media.giphy.com/media/3o72F7RqPjO6YpsQYM/giphy.gif",
         "button_style": "military",
-        "model": "Random Forest"
+        "model": "Random Forest",
+        "bg_image": "pubg_bg.jpg",
+        "logo": "pubg_logo.png"
     }
 }
 
+# Function to encode local images
+def get_base64_image(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode('utf-8')
+
+# Setup session state
 def setup_session_state():
     session_defaults = {
         'data': None, 
@@ -75,20 +81,23 @@ def setup_session_state():
         'target': None,
         'steps': {'loaded': False, 'processed': False, 'trained': False, 'ready_for_model': False},
         'predictions': None, 
-        'stock_data': None,
         'cluster_labels': None
     }
     for key, value in session_defaults.items():
         if key not in st.session_state:
             st.session_state[key] = value
 
+# Apply theme styling
 def apply_theme(theme):
+    # Encode background image
+    bg_image = get_base64_image(theme["bg_image"])
+    
     st.markdown(f"""
     <style>
         @import url('https://fonts.googleapis.com/css2?family={theme["font"].replace(" ", "+")}&display=swap');
         
         body, .stApp {{
-            background-image: url('{theme["background"]}');
+            background-image: url("data:image/jpg;base64,{bg_image}");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -101,6 +110,7 @@ def apply_theme(theme):
             border-radius: 10px;
             color: {theme["text_color"]};
             backdrop-filter: blur(5px);
+            border: 2px solid {theme["primary_color"]};
         }}
         h1, h2, h3, h4, h5, h6 {{
             color: {theme["primary_color"]};
@@ -152,11 +162,8 @@ def apply_theme(theme):
         .stSelectbox, .stMultiselect, .stSlider, .stTextInput {{
             color: #000000;
         }}
-        .st-bb {{
-            background-color: transparent;
-        }}
-        .st-at {{
-            background-color: {theme["primary_color"]};
+        .stDataFrame {{
+            background-color: rgba(0, 0, 0, 0.7) !important;
         }}
         div[data-baseweb="select"] > div {{
             background-color: white !important;
@@ -164,6 +171,7 @@ def apply_theme(theme):
     </style>
     """, unsafe_allow_html=True)
 
+# Load data function
 def load_data(uploaded_file):
     try:
         if uploaded_file.name.endswith('.csv'):
@@ -184,47 +192,28 @@ def load_data(uploaded_file):
         st.error(f"Error loading file: {str(e)}")
         return None
 
-def fetch_stock_data(stock_symbol, start_date, end_date):
-    with st.spinner(f"Fetching {stock_symbol} data..."):
-        try:
-            stock_data = yf.download(stock_symbol, start=start_date, end=end_date)
-            if not stock_data.empty:
-                st.session_state.data = stock_data.reset_index()
-                st.session_state.steps['loaded'] = True
-                st.success(f"✅ Successfully loaded {len(stock_data)} records")
-                return stock_data
-            else:
-                st.error("No data found for this stock symbol")
-                return None
-        except Exception as e:
-            st.error(f"Error fetching data: {str(e)}")
-            return None
-
+# Show data preview
 def show_data_preview(df, theme):
     numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
     st.write("### Dataset Preview:")
-    st.dataframe(df.head().style.format("{:.2f}", subset=numeric_cols).set_properties(**{
-        'background-color': 'rgba(0, 0, 0, 0.7)',
-        'color': theme["text_color"]
-    }), height=250)
+    st.dataframe(df.head().style.format("{:.2f}", subset=numeric_cols), height=250)
 
+# Feature selection
 def feature_selection(df, theme):
     with st.expander("🔍 Select Features & Target", expanded=True):
         st.markdown("<div class='feature-selector'>", unsafe_allow_html=True)
         all_cols = df.columns.tolist()
         numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
         
-        # For classification problems, check if target is categorical
         is_classification = False
         if len(numeric_cols) > 0:
             target = st.selectbox("Select Target Variable:", all_cols, index=len(all_cols)-1)
             
-            # If target is not numeric, encode it for classification
             if target not in numeric_cols:
                 le = LabelEncoder()
                 df[target] = le.fit_transform(df[target])
                 is_classification = True
-                st.info(f"Non-numeric target detected. Converted to numeric values for {theme['model']}.")
+                st.info(f"Non-numeric target detected. Converted for {theme['model']}.")
             
             default_features = [col for col in numeric_cols if col != target][:3]
             features = st.multiselect("Select Features:", numeric_cols, default=default_features)
@@ -244,6 +233,7 @@ def feature_selection(df, theme):
             st.error("No numeric columns found for analysis")
         st.markdown("</div>", unsafe_allow_html=True)
 
+# Data analysis with error handling
 def data_analysis(df, features, target, theme):
     st.header("🔬 Data Analysis")
     
@@ -251,20 +241,13 @@ def data_analysis(df, features, target, theme):
     
     with col1:
         st.write(f"### {theme['model']} Preparation")
-        if theme['model'] in ["Logistic Regression", "K-Means Clustering"]:
-            st.write(f"Preparing data for {theme['model']}...")
-            if st.session_state.is_classification:
-                st.write("Classification problem detected")
-            else:
-                st.write("Using numeric features for clustering")
+        st.write(f"Analyzing data for {theme['model']}...")
         
-        st.write("### Feature-Target Relationships")
+        st.write("### Feature Distribution")
         selected_feature = st.selectbox("Select feature to plot:", features)
         
-        if theme['model'] == "K-Means Clustering":
-            fig = px.scatter(df, x=selected_feature, y=target, height=400)
-        else:
-            fig = px.scatter(df, x=selected_feature, y=target, trendline="ols", height=400)
+        # Create basic scatter plot without trendline to avoid statsmodels error
+        fig = px.scatter(df, x=selected_feature, y=target, height=400)
         
         fig.update_layout({
             'plot_bgcolor': 'rgba(0, 0, 0, 0)',
@@ -289,6 +272,7 @@ def data_analysis(df, features, target, theme):
     if st.button(f"🚀 Train {theme['model']} Model", key="train_button"):
         st.session_state.steps['ready_for_model'] = True
 
+# Train model function
 def train_model(features, target, model_type, test_size, theme):
     df = st.session_state.data
     X = df[features]
@@ -307,7 +291,6 @@ def train_model(features, target, model_type, test_size, theme):
             st.session_state.X = X
             st.session_state.y = y
             
-            # Calculate silhouette score
             score = silhouette_score(X_scaled, clusters)
             st.session_state.silhouette_score = score
             
@@ -346,6 +329,7 @@ def train_model(features, target, model_type, test_size, theme):
                 st.success(f"Model trained successfully! RMSE: {rmse:.2f}, R²: {r2:.2f}")
             st.balloons()
 
+# Evaluate model
 def evaluate_model(predictions, features, model_type, theme):
     st.header("📊 Model Evaluation")
     
@@ -354,7 +338,6 @@ def evaluate_model(predictions, features, model_type, theme):
         X = st.session_state.X
         clusters = st.session_state.cluster_labels
         
-        # 3D plot if we have at least 3 features
         if len(features) >= 3:
             fig = px.scatter_3d(
                 x=X[features[0]],
@@ -365,7 +348,6 @@ def evaluate_model(predictions, features, model_type, theme):
                 labels={'color': 'Cluster'}
             )
         else:
-            # 2D plot if fewer features
             fig = px.scatter(
                 x=X[features[0]],
                 y=X[features[1]] if len(features) > 1 else X[features[0]],
@@ -383,7 +365,6 @@ def evaluate_model(predictions, features, model_type, theme):
         
         st.metric("Silhouette Score", f"{st.session_state.silhouette_score:.2f}")
         
-        # Cluster statistics
         st.write("### Cluster Statistics")
         cluster_df = pd.DataFrame({
             'Cluster': clusters,
@@ -444,7 +425,7 @@ def evaluate_model(predictions, features, model_type, theme):
                     'Feature': features, 
                     'Importance': st.session_state.model.feature_importances_
                 })
-            else:  # Linear Regression
+            else:
                 importance = pd.DataFrame({
                     'Feature': features,
                     'Importance': np.abs(st.session_state.model.coef_[0])
@@ -490,12 +471,14 @@ def evaluate_model(predictions, features, model_type, theme):
             key='download_clusters'
         )
 
+# Welcome page with theme logo
 def welcome_page(theme):
+    logo = get_base64_image(theme["logo"])
     st.markdown(f"""
     <div style="text-align: center;">
-        <img src="{theme['gif']}" width="400">
-        <h1 style="color: {theme['primary_color']};">{theme['model']} Platform - {theme['font']} Theme</h1>
-        <h3 style="color: {theme['secondary_color']};">Analyze Financial Data with Machine Learning</h3>
+        <img src="data:image/png;base64,{logo}" width="300">
+        <h1 style="color: {theme['primary_color']};">{theme['model']} Platform</h1>
+        <h3 style="color: {theme['secondary_color']};">{theme['font']} Theme</h3>
     </div>
     """, unsafe_allow_html=True)
     
@@ -508,8 +491,7 @@ def welcome_page(theme):
         <div class="feature-selector">
             <h3 style="color: {theme['primary_color']};">📊 Key Features</h3>
             <ul>
-                <li>Upload your own financial datasets</li>
-                <li>Fetch real-time stock market data</li>
+                <li>Upload your datasets (CSV/Excel)</li>
                 <li>Advanced {theme['model']} analysis</li>
                 <li>Interactive visualizations</li>
                 <li>Export results for further analysis</li>
@@ -522,15 +504,16 @@ def welcome_page(theme):
         <div class="feature-selector">
             <h3 style="color: {theme['primary_color']};">⚙️ How It Works</h3>
             <ol>
-                <li>Select your data source</li>
-                <li>Choose features and target variable</li>
-                <li>Explore data with interactive charts</li>
+                <li>Upload your dataset</li>
+                <li>Choose features and target</li>
+                <li>Explore data with charts</li>
                 <li>Train the {theme['model']} model</li>
                 <li>Evaluate and interpret results</li>
             </ol>
         </div>
         """, unsafe_allow_html=True)
 
+# Main function
 def main():
     setup_session_state()
     
@@ -554,18 +537,9 @@ def main():
     # Sidebar Configuration
     with st.sidebar:
         st.header("⚙️ Configuration")
-        data_source = st.radio("Data Source:", ["Upload Dataset", "Yahoo Finance"])
-        
-        if data_source == "Upload Dataset":
-            uploaded_file = st.file_uploader("Upload Dataset:", type=["csv", "xlsx"])
-            if uploaded_file:
-                load_data(uploaded_file)
-        else:
-            stock_symbol = st.text_input("Stock Symbol (e.g., AAPL):", "AAPL")
-            start_date = st.date_input("Start Date:", datetime.date(2020, 1, 1))
-            end_date = st.date_input("End Date:", datetime.date.today())
-            if st.button("Fetch Stock Data"):
-                fetch_stock_data(stock_symbol, start_date, end_date)
+        uploaded_file = st.file_uploader("Upload Dataset:", type=["csv", "xlsx"])
+        if uploaded_file:
+            load_data(uploaded_file)
         
         st.markdown("---")
         st.header("🧠 Model Settings")
