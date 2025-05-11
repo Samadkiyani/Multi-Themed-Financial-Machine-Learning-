@@ -296,7 +296,7 @@ def main():
             y_pred = model.predict(X_test_scaled)
             st.session_state.predictions = {'y_test': y_test, 'y_pred': y_pred, 'X_test': X_test}
             st.success(f"{theme['emojis'][2]} Model trained successfully!")
-            st.markdown("🚁🚁🚁")
+            st.balloons()
 
     # Step 4: Evaluation
     if st.session_state.steps.get('trained'):
