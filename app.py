@@ -21,25 +21,25 @@ st.set_page_config(
 # Theme configurations
 THEMES = {
     "Zombie Theme": {
-        "background": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
+        "background": "https://img.freepik.com/premium-photo/zombie-pattern-illustration_759095-80916.jpg",
         "primary_color": "#ff0000",
         "header_color": "#ffffff",
         "text_color": "#000000"
     },
     "Futuristic Theme": {
-        "background": "https://images.unsplash.com/photo-1512561861162-0a1c1c3c7d8c",
+        "background": "https://png.pngtree.com/background/20230526/original/pngtree-3d-seamless-ts-corridor-led-light-futuristic-futuristic-technology-theme-picture-image_2747901.jpg",
         "primary_color": "#00f3ff",
         "header_color": "#000000",
         "text_color": "#ffffff"
     },
     "Game of Thrones Theme": {
-        "background": "https://images.unsplash.com/photo-1593642632781-0c3d8b5e6c4f",
+        "background": "https://assets1.ignimgs.com/2017/06/28/top100-gotcharacters-desktop-1498688689918.jpg",
         "primary_color": "#ffcc00",
         "header_color": "#000000",
         "text_color": "#ffffff"
     },
     "Gaming Theme": {
-        "background": "https://images.unsplash.com/photo-1511907112600-1b1f5c4c8f1e",
+        "background": "https://wallpapercave.com/wp/wp10535977.jpg",
         "primary_color": "#39ff14",
         "header_color": "#000000",
         "text_color": "#ffffff"
