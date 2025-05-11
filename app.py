@@ -21,7 +21,7 @@ st.set_page_config(
 
 # Theme configurations
 THEMES = {
-    "Zombie Theme": {
+    "Zombie Apocalypse": {
         "background": "https://media.giphy.com/media/xT9IgkgwQDqp0utHFK/giphy.gif",
         "primary_color": "#ff0000",
         "header_color": "#ffffff",
@@ -30,7 +30,7 @@ THEMES = {
         "sidebar_text": "#000000",
         "font_family": "'Creepster', cursive"
     },
-    "Futuristic Theme": {
+    "Futuristic Voyage": {
         "background": "linear-gradient(to right, #00f3ff, #00d2ff, #00b7ff, #00a0ff, #008aff, #0075ff, #0060ff)",
         "primary_color": "#00f3ff",
         "header_color": "#000000",
@@ -39,7 +39,7 @@ THEMES = {
         "sidebar_text": "#000000",
         "font_family": "'Orbitron', sans-serif"
     },
-    "Game of Thrones Theme": {
+    "Game of Kingdoms": {
         "background": "https://media.giphy.com/media/3o7TKwmnDgQb5jemjK/giphy.gif",
         "primary_color": "#ffcc00",
         "header_color": "#000000",
@@ -48,7 +48,7 @@ THEMES = {
         "sidebar_text": "#000000",
         "font_family": "'Cinzel', serif"
     },
-    "Gaming Theme": {
+    "Pixel Playground": {
         "background": "linear-gradient(to right, #ff6b6b, #ffa500, #ffff00, #00ff00, #00ffff, #0000ff, #9b59b6)",
         "primary_color": "#39ff14",
         "header_color": "#000000",
