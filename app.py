@@ -1,19 +1,12 @@
-# app.py - Futuristic ML Platform with 4 Themes
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-import plotly.graph_objects as go
-import openpyxl
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler, LabelEncoder
+from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import (accuracy_score, precision_score, 
-                           recall_score, silhouette_score, 
-                           mean_squared_error, r2_score)
-import base64
+from sklearn.metrics import accuracy_score, mean_squared_error
 
 # Configure page
 st.set_page_config(
@@ -23,9 +16,18 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Futuristic Theme Configurations
+# Theme Configurations
 THEMES = {
-    "Cyber Nexus": {
+    "Zombie Theme": {
+        "primary": "#ff0000",
+        "secondary": "#000000",
+        "bg_color": "#2e2e2e",
+        "text": "#ffffff",
+        "font": "Creepster",
+        "model": "Zombie Predictor",
+        "particles": "🧟‍♂️🧟‍♀️💀"
+    },
+    "Futuristic Theme": {
         "primary": "#00f3ff",
         "secondary": "#7b00ff",
         "bg_color": "#0a0e29",
@@ -34,32 +36,23 @@ THEMES = {
         "model": "Neural Matrix",
         "particles": "✨🌌💫"
     },
-    "Quantum Void": {
-        "primary": "#ff00ff",
-        "secondary": "#00ffff",
-        "bg_color": "#000000",
+    "Game of Thrones Theme": {
+        "primary": "#ffcc00",
+        "secondary": "#ff3300",
+        "bg_color": "#1a1a1a",
         "text": "#ffffff",
-        "font": "Arial Black",
-        "model": "Quantum Classifier",
-        "particles": "⚛️🌀🌠"
+        "font": "Cinzel",
+        "model": "Westeros Predictor",
+        "particles": "🔥❄️⚔️"
     },
-    "Neon Horizon": {
+    "Gaming Theme": {
         "primary": "#39ff14",
         "secondary": "#ff073a",
         "bg_color": "#011627",
         "text": "#ffffff",
-        "font": "Impact",
-        "model": "Plasma Network",
-        "particles": "🔆🌃🌉"
-    },
-    "Galactic Core": {
-        "primary": "#ff6b6b",
-        "secondary": "#4ecdc4",
-        "bg_color": "#0d1b2a",
-        "text": "#ffffff",
-        "font": "Orbitron",
-        "model": "Stellar Engine",
-        "particles": "🌌🛸💥"
+        "font": "Press Start 2P",
+        "model": "Pixel Predictor",
+        "particles": "🎮👾🕹️"
     }
 }
 
@@ -138,7 +131,7 @@ def load_data(uploaded_file):
         st.success(f"🌀 Data Matrix Initialized ({len(df)} records)")
         return df
     except Exception as e:
-        st.error(f"Data Decryption Failed: {str(e)}")
+        st.error(f"Data Loading Failed: {str(e)}")
         return None
 
 def analyze_data(theme):
@@ -195,13 +188,6 @@ def train_model(theme):
         else:
             rmse = np.sqrt(mean_squared_error(y_test, y_pred))
             st.success(f"**Gravitational Sync Complete** | RMSE: {rmse:.2f}")
-        
-        # Jet animation effect
-        st.markdown(f"""
-        <div style="text-align: center; font-size: 40px; margin: 20px 0;">
-            🛩️🛩️🛩️
-        </div>
-        """, unsafe_allow_html=True)
         
         st.session_state.step = 4
 
