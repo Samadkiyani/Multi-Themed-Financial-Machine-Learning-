@@ -11,7 +11,7 @@ from sklearn.metrics import mean_squared_error, r2_score
 
 # Configure page
 st.set_page_config(
-    page_title="ML PRO MADE BY SAMAD KIANI",
+    page_title="ML PRO MADE BY Samad,Izza and Hashir",
     page_icon="🔥",
     layout="wide",
     initial_sidebar_state="expanded"
