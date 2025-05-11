@@ -31,7 +31,7 @@ THEMES = {
         "font_family": "'Creepster', cursive"
     },
     "Futuristic Voyage": {
-        "background": "linear-gradient(to right, #00f3ff, #00d2ff, #00b7ff, #00a0ff, #008aff, #0075ff, #0060ff)",
+        "background": "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGxrZmJwbjYxNHB1aHhuNGZnb3I2ejhiZ3JrNnd5dnBmdzI0dWRkayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26FPKhUtNG3TW74f6/giphy.gif",
         "primary_color": "#00f3ff",
         "header_color": "#000000",
         "text_color": "#ffffff",
