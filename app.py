@@ -21,24 +21,28 @@ st.set_page_config(
 # Theme configurations
 THEMES = {
     "Zombie Theme": {
-        "background": "https://images.unsplash.com/photo-1517841905240-472988babdf9",  # Zombie theme background
+        "background": "https://images.unsplash.com/photo-1517841905240-472988babdf9",
         "primary_color": "#ff0000",
-        "header_color": "#1c3d5a"
+        "header_color": "#ffffff",
+        "text_color": "#000000"
     },
     "Futuristic Theme": {
-        "background": "https://images.unsplash.com/photo-1512561861162-0a1c1c3c7d8c",  # Futuristic theme background
+        "background": "https://images.unsplash.com/photo-1512561861162-0a1c1c3c7d8c",
         "primary_color": "#00f3ff",
-        "header_color": "#1c3d5a"
+        "header_color": "#000000",
+        "text_color": "#ffffff"
     },
     "Game of Thrones Theme": {
-        "background": "https://images.unsplash.com/photo-1593642632781-0c3d8b5e6c4f",  # GOT theme background
+        "background": "https://images.unsplash.com/photo-1593642632781-0c3d8b5e6c4f",
         "primary_color": "#ffcc00",
-        "header_color": "#1c3d5a"
+        "header_color": "#000000",
+        "text_color": "#ffffff"
     },
     "Gaming Theme": {
-        "background": "https://images.unsplash.com/photo-1511907112600-1b1f5c4c8f1e",  # Gaming theme background
+        "background": "https://images.unsplash.com/photo-1511907112600-1b1f5c4c8f1e",
         "primary_color": "#39ff14",
-        "header_color": "#1c3d5a"
+        "header_color": "#000000",
+        "text_color": "#ffffff"
     }
 }
 
@@ -50,13 +54,13 @@ def apply_theme(theme):
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            color: #ffffff;
+            color: {theme["text_color"]};
         }}
         .main {{
             background-color: rgba(255, 255, 255, 0.85);
             padding: 2rem;
             border-radius: 10px;
-            color: #333333;
+            color: {theme["text_color"]};
         }}
         h1, h2 {{
             color: {theme["header_color"]};
@@ -94,7 +98,22 @@ def apply_theme(theme):
             padding: 1rem;
             border-radius: 10px;
         }}
+        @keyframes fly {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100vw); }
+        }
+        .airplane {
+            position: absolute;
+            top: 20%;
+            left: -10%;
+            animation: fly 5s linear infinite;
+        }
     </style>
+    """, unsafe_allow_html=True)
+
+    # Add flying airplane animation
+    st.markdown("""
+    <img src="https://cdn-icons-png.flaticon.com/512/619/619167.png" class="airplane" width="50" />
     """, unsafe_allow_html=True)
 
 # Main Function
@@ -227,7 +246,6 @@ def main():
             y_pred = model.predict(X_test_scaled)
             st.session_state.predictions = {'y_test': y_test, 'y_pred': y_pred, 'X_test': X_test}
             st.success("Model trained successfully!")
-            st.balloons()
 
     # Step 4: Evaluation
     if st.session_state.steps.get('trained'):
