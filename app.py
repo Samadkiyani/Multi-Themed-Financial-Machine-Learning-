@@ -40,7 +40,7 @@ THEMES = {
         "font_family": "'Orbitron', sans-serif"
     },
     "Game of Kingdoms": {
-        "background": "https://media.giphy.com/media/3o7TKwmnDgQb5jemjK/giphy.gif",
+        "background": "https://media0.giphy.com/media/v1.Y2lkPTc5MGI3NjExenptbXcwMWc5NWlxNDE0c2cyODNkZHQwcTNkYWJnNmVla21kbGY2biZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/kJ3KXdQzBr69y/giphy.gif",
         "primary_color": "#ffcc00",
         "header_color": "#000000",
         "text_color": "#ffffff",
@@ -48,8 +48,8 @@ THEMES = {
         "sidebar_text": "#000000",
         "font_family": "'Cinzel', serif"
     },
-    "Pixel Playground": {
-        "background": "linear-gradient(to right, #ff6b6b, #ffa500, #ffff00, #00ff00, #00ffff, #0000ff, #9b59b6)",
+    "Pubg": {
+        "background": "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmp4cm53dm5odGFpMXV6ZnZmbjFsaWZlYWtzbnI4ZGowYTR1a3p6ciZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/vVwv7I87uB9gZ7avim/giphy.gif",
         "primary_color": "#39ff14",
         "header_color": "#000000",
         "text_color": "#ffffff",
