@@ -31,7 +31,7 @@ THEMES = {
         "font_family": "'Creepster', cursive"
     },
     "Futuristic Voyage": {
-        "background": "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGxrZmJwbjYxNHB1aHhuNGZnb3I2ejhiZ3JrNnd5dnBmdzI0dWRkayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26FPKhUtNG3TW74f6/giphy.gif",
+        "background": "https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExNGxrZmJwbjYxNHB1aHhuNGZnb3I2ejhiZ3JrNnd5dnBmdzI0dXBkayZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26FPKhUtNG3TW74f6/giphy.gif",
         "primary_color": "#00f3ff",
         "header_color": "#000000",
         "text_color": "#ffffff",
@@ -275,39 +275,38 @@ def main():
             st.session_state.predictions = {'y_test': y_test, 'y_pred': y_pred, 'X_test': X_test}
             st.success("Model trained successfully!")
 
-    # Step 4: Evaluation
-    if st.session_state.steps.get('trained'):
-        st.header("4. Model Evaluation")
-        predictions = st.session_state.predictions
-        y_test = predictions['y_test']
-        y_pred = predictions['y_pred']
-        
-        col1, col2 = st.columns(2)
-        with col1:
-            st.metric("RMSE", f"{np.sqrt(mean_squared_error(y_test, y_pred)):.2f}", delta_color="inverse")
-        with col2:
-            st.metric("R² Score", f"{r2_score(y_test, y_pred):.2f}", delta_color="inverse")
-        
-        st.write("### Actual vs Predicted Values")
-        results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred}).reset_index(drop=True)
-        
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=results.index, y=results['Actual'], name='Actual', mode='markers', marker=dict(color='#2a4a7c')))
-        fig.add_trace(go.Scatter(x=results.index, y=results['Predicted'], name='Predicted', mode='markers', marker=dict(color='#4CAF50')))
-        fig.update_layout(xaxis_title="Sample Index", yaxis_title="Value", height=500, template='plotly_dark')
-        st.plotly_chart(fig, use_container_width=True)
-        
-        if model_type == "Random Forest":
-            st.write("### Feature Importance")
-            importance = pd.DataFrame({'Feature': st.session_state.features, 'Importance': st.session_state.model.feature_importances_})
-            importance = importance.sort_values('Importance', ascending=False)
-            fig = px.bar(importance, x='Importance', y='Feature', orientation='h', color='Importance', color_continuous_scale='Inferno')
+            if st.session_state.steps.get('trained'):
+            st.header("4. Model Evaluation")
+            predictions = st.session_state.predictions
+            y_test = predictions['y_test']
+            y_pred = predictions['y_pred']
+            
+            col1, col2 = st.columns(2)
+            with col1:
+                st.metric("RMSE", f"{np.sqrt(mean_squared_error(y_test, y_pred)):.2f}", delta_color="inverse")
+            with col2:
+                st.metric("R² Score", f"{r2_score(y_test, y_pred):.2f}", delta_color="inverse")
+            
+            st.write("### Actual vs Predicted Values")
+            results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred}).reset_index(drop=True)
+            
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=results.index, y=results['Actual'], name='Actual', mode='markers', marker=dict(color='#2a4a7c')))
+            fig.add_trace(go.Scatter(x=results.index, y=results['Predicted'], name='Predicted', mode='markers', marker=dict(color='#4CAF50')))
+            fig.update_layout(xaxis_title="Sample Index", yaxis_title="Value", height=500, template='plotly_dark')
             st.plotly_chart(fig, use_container_width=True)
-        
-        csv = results.to_csv(index=False).encode('utf-8')
-        st.download_button("💾 Download Predictions", csv, "predictions.csv", "text/csv")
-
-    st.markdown('</div>', unsafe_allow_html=True)
-
-if __name__ == "__main__":
-    main()
+            
+            if model_type == "Random Forest":
+                st.write("### Feature Importance")
+                importance = pd.DataFrame({'Feature': st.session_state.features, 'Importance': st.session_state.model.feature_importances_})
+                importance = importance.sort_values('Importance', ascending=False)
+                fig = px.bar(importance, x='Importance', y='Feature', orientation='h', color='Importance', color_continuous_scale='Inferno')
+                st.plotly_chart(fig, use_container_width=True)
+            
+            csv = results.to_csv(index=False).encode('utf-8')
+            st.download_button("💾 Download Predictions", csv, "predictions.csv", "text/csv")
+    
+        st.markdown('</div>', unsafe_allow_html=True)
+    
+    if __name__ == "__main__":
+        main()
