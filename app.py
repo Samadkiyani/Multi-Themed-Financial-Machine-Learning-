@@ -1,341 +1,267 @@
+# app.py - Universal ML Platform for Any Dataset
 import streamlit as st
 import pandas as pd
 import numpy as np
 import plotly.express as px
-from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.cluster import KMeans
+import plotly.graph_objects as go
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import accuracy_score, mean_squared_error
-import yfinance as yf
+from sklearn.metrics import mean_squared_error, r2_score
 
 # Configure page
 st.set_page_config(
-    page_title="NEXUS AI",
-    page_icon="🚀",
+    page_title="ML PRO MADE BY SAMAD KIANI",
+    page_icon="https://tse2.mm.bing.net/th?id=OIP.Fkdoyke5qijSDVWyGKJB9QHaHk&pid=Api&P=0&h=220",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Theme Configurations
+# Theme configurations
 THEMES = {
     "Zombie Theme": {
-        "primary": "#ff0000",
-        "secondary": "#000000",
-        "bg_color": "#2e2e2e",
-        "text": "#ffffff",
-        "font": "Creepster",
-        "model": "Zombie Predictor",
-        "particles": "🧟‍♂️🧟‍♀️💀",
-        "background": "https://images.unsplash.com/photo-1517841905240-472988babdf9"  # Zombie theme background
+        "background": "https://images.unsplash.com/photo-1517841905240-472988babdf9",  # Zombie theme background
+        "primary_color": "#ff0000",
+        "header_color": "#1c3d5a"
     },
     "Futuristic Theme": {
-        "primary": "#00f3ff",
-        "secondary": "#7b00ff",
-        "bg_color": "#0a0e29",
-        "text": "#ffffff",
-        "font": "Courier New",
-        "model": "Neural Matrix",
-        "particles": "✨🌌💫",
-        "background": "https://images.unsplash.com/photo-1512561861162-0a1c1c3c7d8c"  # Futuristic theme background
+        "background": "https://images.unsplash.com/photo-1512561861162-0a1c1c3c7d8c",  # Futuristic theme background
+        "primary_color": "#00f3ff",
+        "header_color": "#1c3d5a"
     },
     "Game of Thrones Theme": {
-        "primary": "#ffcc00",
-        "secondary": "#ff3300",
-        "bg_color": "#1a1a1a",
-        "text": "#ffffff",
-        "font": "Cinzel",
-        "model": "Westeros Predictor",
-        "particles": "🔥❄️⚔️",
-        "background": "https://images.unsplash.com/photo-1593642632781-0c3d8b5e6c4f"  # GOT theme background
+        "background": "https://images.unsplash.com/photo-1593642632781-0c3d8b5e6c4f",  # GOT theme background
+        "primary_color": "#ffcc00",
+        "header_color": "#1c3d5a"
     },
     "Gaming Theme": {
-        "primary": "#39ff14",
-        "secondary": "#ff073a",
-        "bg_color": "#011627",
-        "text": "#ffffff",
-        "font": "Press Start 2P",
-        "model": "Pixel Predictor",
-        "particles": "🎮👾🕹️",
-        "background": "https://images.unsplash.com/photo-1511907112600-1b1f5c4c8f1e"  # Gaming theme background
+        "background": "https://images.unsplash.com/photo-1511907112600-1b1f5c4c8f1e",  # Gaming theme background
+        "primary_color": "#39ff14",
+        "header_color": "#1c3d5a"
     }
 }
 
 def apply_theme(theme):
     st.markdown(f"""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family={theme['font'].replace(' ', '+')}&display=swap');
-        
         body, .stApp {{
-            background-color: {theme['bg_color']};
-            color: {theme['text']};
-            font-family: '{theme['font']}', sans-serif;
-            background-image: url('{theme['background']}');
+            background-image: url('{theme["background"]}');
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
+            color: #ffffff;
         }}
-        
-        .main-container {{
-            background: rgba(255, 255, 255, 0.8);
+        .main {{
+            background-color: rgba(255, 255, 255, 0.85);
             padding: 2rem;
-            border-radius: 15px;
-            border: 1px solid {theme['primary']}80;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 0 30px {theme['primary']}40;
+            border-radius: 10px;
+            color: #333333;
         }}
-        
-        h1, h2, h3 {{
-            color: {theme['primary']};
-            text-shadow: 0 0 10px {theme['primary']}80;
+        h1, h2 {{
+            color: {theme["header_color"]};
+            font-weight: 700;
         }}
-        
         .stButton>button {{
-            background: {theme['primary']};
-            color: {theme['bg_color']};
-            border: none;
-            border-radius: 5px;
-            padding: 0.5rem 2rem;
-            transition: all 0.3s;
+            background-color: {theme["primary_color"]};
+            color: white;
+            border-radius: 6px;
+            padding: 0.5rem 1rem;
+            font-weight: bold;
         }}
-        
-        .stButton>button:hover {{
-            background: {theme['secondary']};
-            box-shadow: 0 0 15px {theme['secondary']}80;
+        .stDownloadButton>button {{
+            background-color: #28a745;
+            color: white;
+            font-weight: bold;
         }}
-        
-        .dataframe {{
-            background-color: {theme['bg_color']} !important;
-            color: {theme['text']} !important;
+        .sidebar .sidebar-content {{
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+        }}
+        .data-warning {{
+            color: #c0392b;
+            font-weight: bold;
+        }}
+        .feature-selector {{
+            background-color: #f0f8ff;
+            padding: 15px;
+            border-radius: 10px;
+            color: #333;
+        }}
+        .st-expanderContent {{
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 1rem;
+            border-radius: 10px;
         }}
     </style>
     """, unsafe_allow_html=True)
 
-def init_session():
-    if 'data' not in st.session_state:
-        st.session_state.data = None
-    if 'model' not in st.session_state:
-        st.session_state.model = None
-    if 'features' not in st.session_state:
-        st.session_state.features = []
-    if 'target' not in st.session_state:
-        st.session_state.target = None
-    if 'predictions' not in st.session_state:
-        st.session_state.predictions = None
-    if 'steps' not in st.session_state:
-        st.session_state.steps = {
-            'loaded': False,
-            'processed': False,
-            'ready_for_model': False,
-            'trained': False
-        }
-
-def load_data(uploaded_file):
-    try:
-        if uploaded_file.name.endswith('.csv'):
-            df = pd.read_csv(uploaded_file)
-        else:
-            df = pd.read_excel(uploaded_file)
-            
-        numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
-        if len(numeric_cols) < 2:
-            st.error("Dataset needs at least 2 numeric columns")
-            return None
-            
-        st.session_state.data = df
-        st.session_state.steps['loaded'] = True
-        st.success(f"🌀 Data Matrix Initialized ({len(df)} records)")
-        return df
-    except Exception as e:
-        st.error(f"Data Loading Failed: {str(e)}")
-        return None
-
-def fetch_stock_data(ticker):
-    try:
-        df = yf.download(ticker, period="1y")
-        if df.empty:
-            st.error("No data found for this ticker.")
-            return None
-        st.session_state.data = df
-        st.session_state.steps['loaded'] = True
-        st.success(f"📈 Stock Data for {ticker} Loaded ({len(df)} records)")
-        return df
-    except Exception as e:
-        st.error(f"Failed to fetch stock data: {str(e)}")
-        return None
-
-def show_data_preview(df):
-    st.write("### Data Preview")
-    st.dataframe(df.head())
-
-def feature_selection(df):
-    with st.expander("Feature Selection", expanded=True):
-        st.session_state.target = st.selectbox("Target Variable", df.columns)
-        st.session_state.features = st.multiselect("Features", 
-                                                  [c for c in df.columns if c != st.session_state.target],
-                                                  default=df.columns[0])
-
-def data_analysis(df, features, target, theme):
-    st.header(f"🔍 {theme['model']} Analysis")
-    
-    numeric_df = df.select_dtypes(include=[np.number])
-    if numeric_df.shape[1] < 2:
-        st.error("Dataset needs at least 2 numeric columns for correlation analysis.")
-        return
-
-    if numeric_df.isnull().values.any():
-        st.warning("NaN values found in the dataset. Filling NaN values with zeros.")
-        numeric_df = numeric_df.fillna(0)
-
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.write("### Data Signature")
-        st.dataframe(numeric_df.describe().style.format("{:.2f}"), height=300)
-        
-    with col2:
-        st.write("### Quantum Correlation")
-        corr = numeric_df.corr()
-        fig = px.imshow(corr, text_auto=".2f", 
-                       color_continuous_scale=[theme['primary'], theme['secondary']])
-        fig.update_layout(
-            plot_bgcolor=theme['bg_color'],
-            paper_bgcolor=theme['bg_color'],
-            font_color=theme['text']
-        )
-        st.plotly_chart(fig, use_container_width=True)
-
-    st.session_state.steps['processed'] = True
-
-def train_model(features, target, model_type, test_size=0.2):
-    st.header("🚀 Model Training")
-    df = st.session_state.data
-    X = df[features]
-    y = df[target]
-    
-    if model_type == "Logistic Regression" and y.nunique() < 5:  # Classification
-        model = LogisticRegression(max_iter=1000)
-    elif model_type == "Linear Regression":  # Regression
-        model = LinearRegression()
-    else:  # K-Means Clustering
-        model = KMeans(n_clusters=3)
-        st.session_state.model = model.fit(X)
-        st.session_state.predictions = model.predict(X)
-        st.success("K-Means Clustering model trained successfully.")
-        st.session_state.steps['trained'] = True
-        return
-    
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
-    scaler = StandardScaler()
-    X_train = scaler.fit_transform(X_train)
-    X_test = scaler.transform(X_test)
-    
-    with st.spinner(f"Training {model_type}..."):
-        model.fit(X_train, y_train)
-        st.session_state.model = model
-        y_pred = model.predict(X_test)
-        
-        if model_type == "Logistic Regression":
-            acc = accuracy_score(y_test, y_pred)
-            st.success(f"**Quantum Lock Achieved** | Accuracy: {acc:.2f}")
-        else:  # Linear Regression
-            rmse = np.sqrt(mean_squared_error(y_test, y_pred))
-            st.success(f"**Gravitational Sync Complete** | RMSE: {rmse:.2f}")
-        
-        st.session_state.predictions = y_pred
-        st.session_state.steps['trained'] = True
-
-def evaluate_model(predictions, features, model_type, theme):
-    st.header("📊 Evaluation Results")
-    if model_type == "K-Means Clustering":
-        st.write("### Clustering Results")
-        df = st.session_state.data
-        df['Cluster'] = predictions
-        fig = px.scatter(df, x=features[0], y=features[1], color='Cluster', 
-                         color_continuous_scale=[theme['primary'], theme['secondary']])
-        st.plotly_chart(fig, use_container_width=True)
-    else:
-        st.write("### Predictions")
-        st.dataframe(pd.DataFrame(predictions, columns=["Predictions"]))
-    
-    st.session_state.steps['ready_for_model'] = False
-
+# Main Function
 def main():
-    init_session()
-    
-    # Theme Selection
-    with st.sidebar:
-        st.title("🌌 Theme Matrix")
-        theme_name = st.selectbox("", list(THEMES.keys()))
-        theme = THEMES[theme_name]
-        apply_theme(theme)
-        
-        st.markdown("---")
-        st.header("Data Sources")
-        data_source = st.radio("Select Data Source", ["Upload Dataset", "Fetch Stock Data"])
-        uploaded_file = st.file_uploader("Upload Financial Dataset from Kragle", type=["csv", "xlsx"])
-        ticker = st.text_input("Fetch Stock Data using Yahoo Finance (ticker symbol):")
-        
-        if uploaded_file and not st.session_state.steps['loaded']:
-            load_data(uploaded_file)
-        elif ticker and not st.session_state.steps['loaded']:
-            fetch_stock_data(ticker)
+    st.sidebar.header("⚙️ Configuration")
+    theme_name = st.sidebar.selectbox("Select Theme:", list(THEMES.keys()))
+    theme = THEMES[theme_name]
+    apply_theme(theme)
 
-    # Main Interface
-    st.markdown(f"<div class='main-container'>", unsafe_allow_html=True)
+    st.markdown('<div class="main">', unsafe_allow_html=True)
+    st.title("📊 Universal ML Analysis Platform")
+    st.markdown("---")
     
+    # Session state initialization
+    session_defaults = {
+        'data': None, 'model': None, 'features': [], 'target': None,
+        'steps': {'loaded': False, 'processed': False, 'trained': False},
+        'predictions': None
+    }
+    for key, value in session_defaults.items():
+        st.session_state.setdefault(key, value)
+
+    # Sidebar Configuration
+    uploaded_file = st.sidebar.file_uploader("Upload Dataset:", type=["csv", "xlsx"])
+    st.sidebar.markdown("---")
+    st.sidebar.header("🧠 Model Settings")
+    model_type = st.sidebar.selectbox("Select Model:", ["Linear Regression", "Random Forest"])
+    test_size = st.sidebar.slider("Test Size Ratio:", 0.1, 0.5, 0.2)
+    st.sidebar.button("Reset Session", on_click=lambda: st.session_state.clear())
+
     # Step 1: Data Upload
     st.header("1. Data Upload & Selection")
-    if data_source == "Upload Dataset":
-        if uploaded_file:
-            df = load_data(uploaded_file)
-            if df is not None:
-                show_data_preview(df)
-                feature_selection(df)
-        else:
-            st.markdown(f"""
-            <div class='feature-selector'>
-            📁 **How to Use:**
-            1. Upload any CSV or Excel file with numeric data  
-            2. Or fetch stock data from Yahoo Finance
-            3. Select target variable (what you want to predict)  
-            4. Choose features (variables used for prediction)  
-            5. The system will automatically handle the rest  
-            </div>
-            """, unsafe_allow_html=True)
+    if uploaded_file:
+        try:
+            if uploaded_file.name.endswith('.csv'):
+                df = pd.read_csv(uploaded_file)
+            else:
+                df = pd.read_excel(uploaded_file)
+                
+            numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
+            if len(numeric_cols) < 2:
+                st.error("Dataset needs at least 2 numeric columns for analysis")
+                return
+                
+            st.session_state.data = df
+            st.session_state.steps['loaded'] = True
+            st.success(f"✅ Successfully loaded {len(df)} records")
+            
+            st.write("### Dataset Preview:")
+            st.dataframe(df.head().style.format("{:.2f}", subset=numeric_cols), height=250)
+            
+            with st.expander("🔍 Select Features & Target"):
+                st.markdown("<div class='feature-selector'>", unsafe_allow_html=True)
+                all_cols = df.columns.tolist()
+                target = st.selectbox("Select Target Variable:", numeric_cols, index=len(numeric_cols)-1)
+                default_features = [col for col in numeric_cols if col != target][:3]
+                features = st.multiselect("Select Features:", numeric_cols, default=default_features)
+                
+                if st.button("Confirm Selection"):
+                    if len(features) < 1:
+                        st.error("Please select at least one feature")
+                    elif target in features:
+                        st.error("Target variable cannot be a feature")
+                    else:
+                        st.session_state.features = features
+                        st.session_state.target = target
+                        st.session_state.steps['processed'] = True
+                        st.success("Features and target confirmed!")
+                st.markdown("</div>", unsafe_allow_html=True)
+            
+        except Exception as e:
+            st.error(f"Error loading file: {str(e)}")
     else:
-        if st.session_state.steps['loaded']:
-            df = st.session_state.data
-            show_data_preview(df)
-            feature_selection(df)
+        st.markdown("""
+        <div class='feature-selector'>
+        📁 **How to Use:**
+        1. Upload any CSV or Excel file with numeric data  
+        2. Select target variable (what you want to predict)  
+        3. Choose features (variables used for prediction)  
+        4. The system will automatically handle the rest  
+        </div>
+        """, unsafe_allow_html=True)
 
     # Step 2: Data Analysis
-    if st.session_state.steps['loaded'] and not st.session_state.steps['processed']:
-        data_analysis(
-            st.session_state.data,
-            st.session_state.features,
-            st.session_state.target,
-            theme
-        )
+    if st.session_state.steps['processed']:
+        st.header("2. Data Analysis")
+        df = st.session_state.data
+        features = st.session_state.features
+        target = st.session_state.target
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.write("### Feature-Target Relationships")
+            selected_feature = st.selectbox("Select feature to plot:", features)
+            fig = px.scatter(df, x=selected_feature, y=target, trendline="ols", height=400)
+            st.plotly_chart(fig, use_container_width=True)
+            
+        with col2:
+            st.write("### Correlation Matrix")
+            corr_matrix = df[features + [target]].corr()
+            fig = px.imshow(corr_matrix, text_auto=".2f", color_continuous_scale='Blues', aspect="auto")
+            st.plotly_chart(fig, use_container_width=True)
+        
+        if st.button("🚀 Proceed to Model Training"):
+            st.session_state.steps['ready_for_model'] = True
 
     # Step 3: Model Training
-    model_type = st.selectbox("Select Model Type", ["Linear Regression", "Logistic Regression", "K-Means Clustering"])
-    if st.session_state.steps['processed'] and not st.session_state.steps['trained']:
-        train_model(
-            st.session_state.features,
-            st.session_state.target,
-            model_type
-        )
+    if st.session_state.steps.get('ready_for_model'):
+        st.header("3. Model Training")
+        df = st.session_state.data
+        features = st.session_state.features
+        target = st.session_state.target
+        
+        X = df[features]
+        y = df[target]
+        
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=test_size, random_state=42)
+        scaler = StandardScaler()
+        X_train_scaled = scaler.fit_transform(X_train)
+        X_test_scaled = scaler.transform(X_test)
+        
+        model = LinearRegression() if model_type == "Linear Regression" else RandomForestRegressor(n_estimators=100, random_state=42)
+        
+        with st.spinner(f"Training {model_type}..."):
+            model.fit(X_train_scaled, y_train)
+            st.session_state.model = model
+            st.session_state.steps['trained'] = True
+            
+            y_pred = model.predict(X_test_scaled)
+            st.session_state.predictions = {'y_test': y_test, 'y_pred': y_pred, 'X_test': X_test}
+            st.success("Model trained successfully!")
+            st.balloons()
 
     # Step 4: Evaluation
-    if st.session_state.steps['trained']:
-        evaluate_model(
-            st.session_state.predictions,
-            st.session_state.features,
-            model_type,
-            theme
-        )
+    if st.session_state.steps.get('trained'):
+        st.header("4. Model Evaluation")
+        predictions = st.session_state.predictions
+        y_test = predictions['y_test']
+        y_pred = predictions['y_pred']
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("RMSE", f"{np.sqrt(mean_squared_error(y_test, y_pred)):.2f}")
+        with col2:
+            st.metric("R² Score", f"{r2_score(y_test, y_pred):.2f}")
+        
+        st.write("### Actual vs Predicted Values")
+        results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred}).reset_index(drop=True)
+        
+        fig = go.Figure()
+        fig.add_trace(go.Scatter(x=results.index, y=results['Actual'], name='Actual', mode='markers', marker=dict(color='#2a4a7c')))
+        fig.add_trace(go.Scatter(x=results.index, y=results['Predicted'], name='Predicted', mode='markers', marker=dict(color='#4CAF50')))
+        fig.update_layout(xaxis_title="Sample Index", yaxis_title="Value", height=500)
+        st.plotly_chart(fig, use_container_width=True)
+        
+        if model_type == "Random Forest":
+            st.write("### Feature Importance")
+            importance = pd.DataFrame({'Feature': st.session_state.features, 'Importance': st.session_state.model.feature_importances_})
+            importance = importance.sort_values('Importance', ascending=False)
+            fig = px.bar(importance, x='Importance', y='Feature', orientation='h', color='Importance', color_continuous_scale='Blues')
+            st.plotly_chart(fig, use_container_width=True)
+        
+        csv = results.to_csv(index=False).encode('utf-8')
+        st.download_button("💾 Download Predictions", csv, "predictions.csv", "text/csv")
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
