@@ -98,16 +98,16 @@ def apply_theme(theme):
             padding: 1rem;
             border-radius: 10px;
         }}
-        @keyframes fly {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(100vw); }
-        }
-        .airplane {
+        @keyframes fly {{
+            0% {{ transform: translateX(0); }}
+            100% {{ transform: translateX(100vw); }}
+        }}
+        .airplane {{
             position: absolute;
             top: 20%;
             left: -10%;
             animation: fly 5s linear infinite;
-        }
+        }}
     </style>
     """, unsafe_allow_html=True)
 
