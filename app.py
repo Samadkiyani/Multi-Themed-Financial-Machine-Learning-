@@ -24,25 +24,33 @@ THEMES = {
         "background": "https://img.freepik.com/premium-photo/zombie-pattern-illustration_759095-80916.jpg",
         "primary_color": "#ff0000",
         "header_color": "#ffffff",
-        "text_color": "#000000"
+        "text_color": "#000000",
+        "sidebar_bg": "rgba(255, 255, 255, 0.9)",
+        "sidebar_text": "#000000"
     },
     "Futuristic Theme": {
         "background": "https://png.pngtree.com/background/20230526/original/pngtree-3d-seamless-ts-corridor-led-light-futuristic-futuristic-technology-theme-picture-image_2747901.jpg",
         "primary_color": "#00f3ff",
         "header_color": "#000000",
-        "text_color": "#ffffff"
+        "text_color": "#ffffff",
+        "sidebar_bg": "rgba(255, 255, 255, 0.8)",
+        "sidebar_text": "#000000"
     },
     "Game of Thrones Theme": {
         "background": "https://assets1.ignimgs.com/2017/06/28/top100-gotcharacters-desktop-1498688689918.jpg",
         "primary_color": "#ffcc00",
         "header_color": "#000000",
-        "text_color": "#ffffff"
+        "text_color": "#ffffff",
+        "sidebar_bg": "rgba(255, 255, 255, 0.8)",
+        "sidebar_text": "#000000"
     },
     "Gaming Theme": {
         "background": "https://wallpapercave.com/wp/wp10535977.jpg",
         "primary_color": "#39ff14",
         "header_color": "#000000",
-        "text_color": "#ffffff"
+        "text_color": "#ffffff",
+        "sidebar_bg": "rgba(255, 255, 255, 0.9)",
+        "sidebar_text": "#000000"
     }
 }
 
@@ -79,7 +87,8 @@ def apply_theme(theme):
             font-weight: bold;
         }}
         .sidebar .sidebar-content {{
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: {theme["sidebar_bg"]};
+            color: {theme["sidebar_text"]};
             padding: 20px;
             border-radius: 10px;
         }}
